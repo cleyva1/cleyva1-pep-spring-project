@@ -9,30 +9,36 @@ import com.example.entity.Account;
 import com.example.exception.DuplicateUsernameException;
 import com.example.repository.AccountRepository;
 
+import java.util.Optional;
+
 @Transactional
 @Service
 public class AccountService {
-    AccountRepository accountRepository;
+    private AccountRepository accountRepository;
     @Autowired
     public AccountService(AccountRepository accountRepository){
         this.accountRepository = accountRepository;
     }
 
     public Account addAccount(Account account) throws DuplicateUsernameException {
-        if (accountRepository.findAccountByUsername(account.getUsername()) != null) {
+        if (accountRepository.findAccountByUsername(account.getUsername()).isPresent()) {
             throw new DuplicateUsernameException();
+        }
+        else if (account.getPassword().length() < 4 || account.getUsername() == "") {
+            throw new IllegalArgumentException();
         }
         else {
             return accountRepository.save(account);
         }
     }
 
-    public Boolean login(String username, String password) {
-        if (accountRepository.findAccountByUsernameAndPassword(username, password) != null) {
-            return true;
+    public Account login(String username, String password) {
+        Optional<Account> optionalAccount = accountRepository.findAccountByUsernameAndPassword(username, password);
+        if (optionalAccount.isPresent()) {
+            return optionalAccount.get();
         }
         else {
-            return false;
+            return null;
         }
     }
 }

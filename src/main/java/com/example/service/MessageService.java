@@ -14,7 +14,8 @@ import java.util.Optional;
 @Transactional
 @Service
 public class MessageService {
-    MessageRepository messageRepository;
+    private MessageRepository messageRepository;
+
     @Autowired
     public MessageService(MessageRepository messageRepository) {
         this.messageRepository = messageRepository;
@@ -39,7 +40,7 @@ public class MessageService {
     }
 
     public int deleteMessage(Integer id) {
-       return messageRepository.deleteByMessageId(id);
+       return messageRepository.deleteByMessageId(id).get();
     }
 
     public void updateMessage(long id, Message replacement){

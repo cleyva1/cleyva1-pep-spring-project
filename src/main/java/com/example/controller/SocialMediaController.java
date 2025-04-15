@@ -1,4 +1,5 @@
 package com.example.controller;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,56 +21,63 @@ import java.util.List;
 
 @RestController
 public class SocialMediaController {
-    AccountService accountService;
-    MessageService messageService;
+    private AccountService accountService;
+    private MessageService messageService;
+
+    @Autowired
+    public SocialMediaController(AccountService accountService, MessageService messageService) {
+        this.accountService = accountService;
+        this.messageService = messageService;
+    }
     
     @PostMapping("/register")
-    public ResponseEntity registerUser(@RequestBody Account account) {
-        if (account.getUsername() != "" && account.getPassword().length() >= 4) {
-            try {
-                Account newAccount = accountService.addAccount(account);
-                return ResponseEntity.status(200).body(newAccount);
-            } catch (DuplicateUsernameException e) {
-                return ResponseEntity.status(409).body("Duplicate Username");
-            }
-        }
-        else {
-            return ResponseEntity.status(400).body("User error");
+    public ResponseEntity<?> registerUser(@RequestBody Account account) {
+        try {
+            Account newAccount = accountService.addAccount(account);
+            return ResponseEntity.status(200).body(newAccount);
+        } catch (DuplicateUsernameException e) {
+            return ResponseEntity.status(409).body("Duplicate Username");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400).body("Invalid Username or Password");
         }
     }
     
     @PostMapping("/login")
-    public ResponseEntity login(@RequestBody Account account) {
+    public ResponseEntity<?> login(@RequestBody Account account) {
+        boolean loginSuccess = accountService.login(account.getUsername(), account.getPassword());
+        if (loginSuccess) {
+            
+        }
         return null;
     }
 
     @PostMapping("/messages")
-    public ResponseEntity postMessage(@RequestBody Message message) {
+    public ResponseEntity<?> postMessage(@RequestBody Message message) {
         return null;
     }
 
     @GetMapping("/messages")
-    public ResponseEntity getAllMessages() {
+    public ResponseEntity<?> getAllMessages() {
         return ResponseEntity.status(200).body(messageService.getAllMessages());
     }
 
     @GetMapping("/messages/{messageId}")
-    public ResponseEntity getMessageById(@PathVariable Integer messageId) {
+    public ResponseEntity<?> getMessageById(@PathVariable Integer messageId) {
         return null;
     }
 
     @DeleteMapping("/messages/{messageId}")
-    public ResponseEntity deleteMessage(@PathVariable Integer messageId) {
+    public ResponseEntity<?> deleteMessage(@PathVariable Integer messageId) {
         return null;
     }
 
     @PatchMapping("/messages/{messageId}")
-    public ResponseEntity updateMessage(@PathVariable Integer messageId) {
+    public ResponseEntity<?> updateMessage(@PathVariable Integer messageId) {
         return null;
     }
 
     @GetMapping("/accounts/{accountId}/messages")
-    public ResponseEntity getAllMessagesByUser(@PathVariable Integer accountId) {
+    public ResponseEntity<?> getAllMessagesByUser(@PathVariable Integer accountId) {
         return null;
     }
 
