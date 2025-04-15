@@ -44,16 +44,25 @@ public class SocialMediaController {
     
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestBody Account account) {
-        boolean loginSuccess = accountService.login(account.getUsername(), account.getPassword());
-        if (loginSuccess) {
-            
+        Account accountLogin = accountService.login(account.getUsername(), account.getPassword());
+        if (accountLogin != null) {
+            //success
+            return ResponseEntity.status(200).body(accountLogin);
         }
-        return null;
+        else {
+            return ResponseEntity.status(401).body("Unauthorized");
+        }
+        
     }
 
     @PostMapping("/messages")
     public ResponseEntity<?> postMessage(@RequestBody Message message) {
-        return null;
+        Message messageToInsert = messageService.insertMessage(message);
+        boolean accountToCheck = accountService.findByAccountId(message.getPostedBy());
+        if (messageToInsert != null && accountToCheck) {
+            return ResponseEntity.status(200).body(messageToInsert);
+        }
+        else return ResponseEntity.status(400).body("Invalid Message");
     }
 
     @GetMapping("/messages")
@@ -63,22 +72,32 @@ public class SocialMediaController {
 
     @GetMapping("/messages/{messageId}")
     public ResponseEntity<?> getMessageById(@PathVariable Integer messageId) {
-        return null;
+        return ResponseEntity.status(200).body(messageService.getMessageByID(messageId));
     }
 
     @DeleteMapping("/messages/{messageId}")
     public ResponseEntity<?> deleteMessage(@PathVariable Integer messageId) {
-        return null;
+        Integer rowsAffected = messageService.deleteMessage(messageId);
+        if (rowsAffected == 0) {
+            rowsAffected = null;
+        }
+        return ResponseEntity.status(200).body(rowsAffected);
     }
 
     @PatchMapping("/messages/{messageId}")
-    public ResponseEntity<?> updateMessage(@PathVariable Integer messageId) {
-        return null;
+    public ResponseEntity<?> updateMessage(@PathVariable Integer messageId, @RequestBody Message message) {
+        Integer messageUpdated = messageService.updateMessage(messageId, message);
+        if (messageUpdated != null) {
+            return ResponseEntity.status(200).body(messageUpdated);
+        }
+        else {
+            return ResponseEntity.status(400).body("Invalid Message");
+        }
     }
 
     @GetMapping("/accounts/{accountId}/messages")
     public ResponseEntity<?> getAllMessagesByUser(@PathVariable Integer accountId) {
-        return null;
+        return ResponseEntity.status(200).body(messageService.getMessagesByUser(accountId));
     }
 
 }

@@ -26,7 +26,7 @@ public class MessageService {
     }
 
     public Message getMessageByID(Integer id) {
-        Optional<Message> optionalMessage = messageRepository.findById(Long.valueOf(id));
+        Optional<Message> optionalMessage = messageRepository.findMessageByMessageId(id);
         if (optionalMessage.isPresent()) {
             return optionalMessage.get();
         }
@@ -36,19 +36,36 @@ public class MessageService {
     }
 
     public Message insertMessage(Message message) {
-        return messageRepository.save(message);
+        if (message.getMessageText() != "" && message.getMessageText().length() <= 255) {
+            return messageRepository.save(message);
+        }
+        else {
+            return null; 
+        } 
+        
     }
 
-    public int deleteMessage(Integer id) {
+    public Integer deleteMessage(Integer id) {
        return messageRepository.deleteByMessageId(id).get();
     }
 
-    public void updateMessage(long id, Message replacement){
-        Optional<Message> optionalMessage = messageRepository.findById(id);
-        if(optionalMessage.isPresent()){
-            Message message = optionalMessage.get();
-            message.setMessageText(replacement.getMessageText());
-            messageRepository.save(message);
+    public Integer updateMessage(Integer id, Message message){
+        Optional<Message> optionalMessage = messageRepository.findMessageByMessageId(id);
+        if (message.getMessageText().length() > 255 || message.getMessageText() == "") {
+            return null;
         }
+        if(optionalMessage.isPresent()){
+            Message newMessage = optionalMessage.get();
+            newMessage.setMessageText(message.getMessageText());
+            messageRepository.save(newMessage);
+            return 1;
+        }
+        else {
+            return null;
+        }
+    }
+
+    public List<Message> getMessagesByUser(Integer accountId) {
+        return messageRepository.findMessagesByPostedBy(accountId);
     }
 }

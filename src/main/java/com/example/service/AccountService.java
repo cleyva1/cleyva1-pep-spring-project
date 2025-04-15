@@ -15,6 +15,7 @@ import java.util.Optional;
 @Service
 public class AccountService {
     private AccountRepository accountRepository;
+
     @Autowired
     public AccountService(AccountRepository accountRepository){
         this.accountRepository = accountRepository;
@@ -40,5 +41,11 @@ public class AccountService {
         else {
             return null;
         }
+    }
+
+    public boolean findByAccountId(Integer accountId) {
+        Optional<Account> optionalAccount = accountRepository.findAccountByAccountId(accountId);
+        System.out.println(accountId);
+        return optionalAccount.isPresent();
     }
 }

@@ -15,4 +15,6 @@ public interface MessageRepository extends JpaRepository<Message, Long> {
     Optional<Message> findMessageByMessageId(Integer messageId);
 
     Optional<Integer> deleteByMessageId(Integer messageId);
+
+    List<Message> findMessagesByPostedBy(Integer postedBy);
 }
