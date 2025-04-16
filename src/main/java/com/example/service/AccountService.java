@@ -44,8 +44,7 @@ public class AccountService {
     }
 
     public boolean findByAccountId(Integer accountId) {
-        Optional<Account> optionalAccount = accountRepository.findAccountByAccountId(accountId);
-        System.out.println(accountId);
-        return optionalAccount.isPresent();
-    }
+            Optional<Account> optionalAccount = accountRepository.findAccountByAccountId(accountId);
+            return optionalAccount.isPresent();
+    }  
 }

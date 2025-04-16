@@ -57,12 +57,18 @@ public class SocialMediaController {
 
     @PostMapping("/messages")
     public ResponseEntity<?> postMessage(@RequestBody Message message) {
-        Message messageToInsert = messageService.insertMessage(message);
-        boolean accountToCheck = accountService.findByAccountId(message.getPostedBy());
-        if (messageToInsert != null && accountToCheck) {
-            return ResponseEntity.status(200).body(messageToInsert);
+        if (accountService.findByAccountId(message.getPostedBy())) {
+            Message messageToInsert = messageService.insertMessage(message);
+            if (messageToInsert != null ) {
+                return ResponseEntity.status(200).body(messageToInsert);
+            }
+            else {
+                return ResponseEntity.status(400).body("Invalid Message");
+            }
         }
-        else return ResponseEntity.status(400).body("Invalid Message");
+        else {
+            return ResponseEntity.status(400).body("Invalid Message");
+        }
     }
 
     @GetMapping("/messages")
